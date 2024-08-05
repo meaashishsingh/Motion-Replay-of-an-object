@@ -91,21 +91,3 @@
 }
 
 /* --- */
-
-
-.container {
-  display: flex;
-  height: 100%;
-}
-
-.control-panel {
-  flex: 1;
-  padding: 20px;
-  overflow-y: auto;
-  background-color: #f0f0f0;
-}
-
-
-.control-panel h3 {
-  margin-top: 0;
-}
