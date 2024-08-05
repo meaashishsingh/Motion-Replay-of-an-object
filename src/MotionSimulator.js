@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './App.css'; // Import the CSS file
+import './App.css'; 
 import catlogo from '../src/cat5.svg';
 
 const MotionSimulator = () => {
