@@ -1,0 +1,132 @@
+import React from 'react';
+import MotionControls from './MotionControls';
+import LooksControls from './LooksControls';
+import ControlControls from './ControlControls';
+
+const Sidebar = ({
+  steps,
+  setSteps,
+  turnDegrees,
+  setTurnDegrees,
+  turnDegrees1,
+  setTurnDegrees1,
+  goToX,
+  setGoToX,
+  goToY,
+  setGoToY,
+  goToX1,
+  setGoToX1,
+  goToY1,
+  setGoToY1,
+  glideSeconds,
+  setGlideSeconds,
+  pointDirection,
+  setPointDirection,
+  changeValue,
+  setChangeValue,
+  changeValue1,
+  setChangeValue1,
+  color,
+  setColor,
+  word,
+  setWord,
+  word1,
+  setWord1,
+  sayDuration,
+  setSayDuration,
+  handleMoveSteps,
+  turnRight,
+  turnLeft,
+  goToRandomPosition,
+  handleGoToPosition,
+  glideToRandomPosition,
+  glideToPosition,
+  changeX,
+  setX,
+  changeY,
+  setY,
+  pointInDirection,
+  changeSize,
+  sayWord,
+  hideObject,
+  showObject,
+  actionHistory,
+  selectedAction,
+  setSelectedAction,
+  saveInitialState,
+  loadInitialState,
+  deleteInitialState,
+  replaySelectedAction,
+  selectIndex1,
+  setselectIndex1,
+}) => {
+  return (
+    <div className="sidebar">
+      <MotionControls
+        steps={steps}
+        setSteps={setSteps}
+        turnDegrees={turnDegrees}
+        setTurnDegrees={setTurnDegrees}
+        turnDegrees1={turnDegrees1}
+        setTurnDegrees1={setTurnDegrees1}
+        goToX={goToX}
+        setGoToX={setGoToX}
+        goToY={goToY}
+        setGoToY={setGoToY}
+        goToX1={goToX1}
+        setGoToX1={setGoToX1}
+        goToY1={goToY1}
+        setGoToY1={setGoToY1}
+        glideSeconds={glideSeconds}
+        setGlideSeconds={setGlideSeconds}
+        pointDirection={pointDirection}
+        setPointDirection={setPointDirection}
+        changeValue={changeValue}
+        setChangeValue={setChangeValue}
+        changeValue1={changeValue1}
+        setChangeValue1={setChangeValue1}
+        handleMoveSteps={handleMoveSteps}
+        turnRight={turnRight}
+        turnLeft={turnLeft}
+        goToRandomPosition={goToRandomPosition}
+        handleGoToPosition={handleGoToPosition}
+        glideToRandomPosition={glideToRandomPosition}
+        glideToPosition={glideToPosition}
+        changeX={changeX}
+        setX={setX}
+        changeY={changeY}
+        setY={setY}
+        pointInDirection={pointInDirection}
+      />
+      <LooksControls
+        size={size}
+        setSize={changeSize}
+        color={color}
+        setColor={setColor}
+        word={word}
+        setWord={setWord}
+        word1={word1}
+        setWord1={setWord1}
+        sayDuration={sayDuration}
+        setSayDuration={setSayDuration}
+        sayWord={sayWord}
+        visible={visible}
+        hideObject={hideObject}
+        showObject={showObject}
+      />
+      <ControlControls
+        saveInitialState={saveInitialState}
+        loadInitialState={loadInitialState}
+        deleteInitialState={deleteInitialState}
+        actionHistory={actionHistory}
+        selectedAction={selectedAction}
+        setSelectedAction={setSelectedAction}
+        replaySelectedAction={replaySelectedAction}
+        selectIndex1={selectIndex1}
+        setselectIndex1={setselectIndex1}
+      />
+    </div>
+  );
+};
+
+export default Sidebar;

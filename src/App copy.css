@@ -91,3 +91,64 @@
 }
 
 /* --- */
+
+.container {
+  display: flex;
+  height: 100%;
+}
+
+.control-panel {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  background-color: #f0f0f0;
+}
+
+.control-panel h3 {
+  margin-top: 0;
+}
+
+.speech-bubble {
+  position: relative;
+  background: #00aabb;
+  border-radius: 10px;
+  padding: 10px;
+  color: white;
+  max-width: 200px;
+  text-align: center;
+  margin: 20px;
+}
+
+.speech-bubble.thinking {
+  background: white;
+  border: 2px solid #00aabb;
+  color: #00aabb;
+  border-radius: 20px;
+}
+
+.speech-bubble.thinking::before, .speech-bubble.thinking::after {
+  background: white;
+  border: 2px solid #00aabb;
+}
+
+.speech-bubble.thinking::before {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 20px;
+  margin-left: -10px;
+  margin-top: -5px;
+  border: 10px solid transparent;
+  border-top-color: #00aabb;
+}
+
+.speech-bubble.thinking::after {
+  content: '';
+  position: absolute;
+  bottom: -20px;
+  left: 25px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: white;
+}

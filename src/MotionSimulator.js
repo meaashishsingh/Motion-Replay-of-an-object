@@ -18,12 +18,14 @@ const MotionSimulator = () => {
   const [changeValue, setChangeValue] = useState(10);
   const [changeValue1, setChangeValue1] = useState(10);
   const [color, setColor] = useState('blue');
-  const [word, setWord] = useState('Hello');
+  const [word, setWord] = useState('');
+  const [word1, setWord1] = useState('Hello');
   const [sayDuration, setSayDuration] = useState(1);
   const [visible, setVisible] = useState(true);
   const [actionHistory, setActionHistory] = useState([]);
   const [initialState, setInitialState] = useState(null); // Store initial state
   const [selectedAction, setSelectedAction] = useState(null);
+  const [selectIndex1,setselectIndex1]=useState();
 
   const storeInitialState = () => {
     setInitialState({
@@ -166,10 +168,11 @@ const MotionSimulator = () => {
     }
   };
 
-  const changeColor = (color) => {
-    setColor(color);
-    setActionHistory([...actionHistory, { action: 'changeColor', params: { color } }]);
-  };
+  // const changeColor = (color) => {
+  //   setColor(color);
+  //   document.body.style.backgroundColor = color;
+  //   setActionHistory([...actionHistory, { action: 'changeColor', params: { color } }]);
+  // };
 
   const sayWord = (word, duration) => {
     const parsedDuration = Number(duration);
@@ -192,67 +195,9 @@ const MotionSimulator = () => {
 
  
 
-  const replayActions = () => {
-    actionHistory.forEach((item, index) => {
-      setTimeout(() => {
-        switch (item.action) {
-          case 'move':
-            moveSteps(item.params.steps);
-            break;
-          case 'turnRight':
-            turnRight(item.params.deg);
-            break;
-          case 'turnLeft':
-            turnLeft(item.params.deg);
-            break;
-          case 'goToRandomPosition':
-            goToRandomPosition();
-            break;
-          case 'goToPosition':
-            goToPosition(item.params.x, item.params.y);
-            break;
-          case 'glideToRandomPosition':
-            glideToRandomPosition(item.params.seconds);
-            break;
-          case 'glideToPosition':
-            glideToPosition(item.params.x, item.params.y, item.params.seconds);
-            break;
-          case 'changeX':
-            changeX(item.params.delta);
-            break;
-          case 'setX':
-            setX(item.params.x);
-            break;
-          case 'changeY':
-            changeY(item.params.delta);
-            break;
-          case 'setY':
-            setY(item.params.y);
-            break;
-          case 'pointInDirection':
-            pointInDirection(item.params.direction);
-            break;
-          case 'changeSize':
-            changeSize(item.params.newSize);
-            break;
-          case 'changeColor':
-            changeColor(item.params.color);
-            break;
-          case 'sayWord':
-            sayWord(item.params.word, item.params.duration);
-            break;
-          case 'hideObject':
-            hideObject();
-            break;
-          case 'showObject':
-            showObject();
-            break;
-          default:
-            break;
-        }
-      }, index * 1000);
-    });
-  };
+ 
+          
+           
   const replaySelectedAction = (index) => {
     if (index >= 0 && index < actionHistory.length) {
       const action = actionHistory[index];
@@ -272,9 +217,7 @@ const MotionSimulator = () => {
         case 'glideToPosition':
           glideToPosition(action.params.x, action.params.y, action.params.seconds);
           break;
-        case 'changeColor':
-          changeColor(action.params.color);
-          break;
+       
         case 'sayWord':
           sayWord(action.params.word, action.params.duration);
           break;
@@ -301,8 +244,20 @@ const MotionSimulator = () => {
     }
   };
 
-  const handleSelectAction = (e) => {
-    const selectedIndex = Number(e.target.value);
+  // const handleSelectAction = (selectedIndex ) => {
+   
+  //   setSelectedAction(selectedIndex);
+  //   if (selectedIndex !== null && selectedIndex >= 0 && selectedIndex < actionHistory.length) {
+     
+  //    storeInitialState();
+  //     replaySelectedAction(selectedIndex);
+  //     setTimeout(() => {
+  //       restoreInitialState();
+  //     }, (selectedIndex + 1) * 1000); // Adjust the delay as needed
+  //   }
+  // };
+
+  const handleSelectAction = (selectedIndex) => {
     setSelectedAction(selectedIndex);
     if (selectedIndex !== null && selectedIndex >= 0 && selectedIndex < actionHistory.length) {
       storeInitialState();
@@ -391,6 +346,14 @@ const MotionSimulator = () => {
               onChange={(e) => setGoToY1(e.target.value)}
             />
           </label>
+          <label>
+            Glide Seconds:
+            <input
+              type="text"
+              value={glideSeconds}
+              onChange={(e) => setGlideSeconds(e.target.value)}
+            />
+          </label>
           <button onClick={() => glideToPosition(goToX1, goToY1, glideSeconds)}>Glide to ({goToX1}, {goToY1}) in {glideSeconds}s</button>
           <label>
             Point Direction:
@@ -429,7 +392,7 @@ const MotionSimulator = () => {
           </label>
           <button onClick={() => changeY(changeValue1)}>Change Y by {changeValue1}</button>
           <label>
-            SetX:
+            SetY:
             <input
               type="text"
               value={goToY}
@@ -447,16 +410,26 @@ const MotionSimulator = () => {
             />
           </label>
           <button onClick={() => changeSize(size)}>Set Size to {size}px</button>
+     
           <label>
-            Color:
+            Say Word:
             <input
               type="text"
-              value={color}
-              onChange={(e) => setColor(e.target.value)}
+              value={word1}
+              onChange={(e) => setWord1(e.target.value)}
             />
           </label>
-          <button onClick={() => changeColor(color)}>Change Color to {color}</button>
-          {/* <label>
+          <label>
+            Say Duration:
+            <input
+              type="text"
+              value={sayDuration}
+              onChange={(e) => setSayDuration(e.target.value)}
+            />
+          </label>
+          <button onClick={() => sayWord(word1, sayDuration)}>Say {word1} for {sayDuration}s</button>
+
+          <label>
             Say Word:
             <input
               type="text"
@@ -464,41 +437,23 @@ const MotionSimulator = () => {
               onChange={(e) => setWord(e.target.value)}
             />
           </label>
-          <label>
-            Say Duration (seconds):
-            <input
-              type="text"
-              value={sayDuration}
-              onChange={(e) => setSayDuration(e.target.value)}
-            />
-          </label> */}
-          <button onClick={() => sayWord(word, sayDuration)}>Say  <input
-              type="text"
-              value={word}
-              onChange={(e) => setWord(e.target.value)}
-            /> for  <input
-            type="text"
-            value={sayDuration}
-            onChange={(e) => setSayDuration(e.target.value)}
-          /> s</button>
           <button onClick={hideObject}>Hide</button>
           <button onClick={showObject}>Show</button>
           <h3>Control</h3>
-          <select
-          onChange={handleSelectAction}
-          value={selectedAction}
-        >
-          <option value={null}>Select Action</option>
-          {actionHistory.map((action, index) => (
-            <option key={index} value={index}>
-              {action.action}
-            </option>
-          ))}
-        </select>
-        
-          <button onClick={replaySelectedAction}>Replay Actions</button>
-          {/* <button onClick={replayActions}>Replay Actions</button> */}
-        </div>
+       <h4>Action History</h4>
+               <select
+      value={selectedAction}
+      onChange={(e) => setSelectedAction(Number(e.target.value))}
+    >
+      <option value={null}>Select Action</option>
+      {actionHistory.map((action, index) => (
+        <option key={index} value={index}>
+          {action.action} `action {index}`
+        </option>
+      ))}
+    </select>
+    <button onClick={() => handleSelectAction(selectedAction)}>Replay Actions</button>
+        </div> 
       </div>
       <div className="simulation-area">
         <div
@@ -515,6 +470,7 @@ const MotionSimulator = () => {
         >
           <img src={catlogo} alt="Object" />
           {word && (
+            
             <div style={{ top: position.y - 20 }}>
               {word}
             </div>

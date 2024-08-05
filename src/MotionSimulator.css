@@ -1,0 +1,28 @@
+.motion-simulator {
+    display: flex;
+    height: 100vh;
+  }
+  
+  .simulation-area {
+    flex: 1;
+    position: relative;
+    background-color: lightgrey;
+  }
+  
+  .simulated-object {
+    position: absolute;
+    background-color: blue;
+  }
+  
+  .word-bubble {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 2px 5px;
+    font-size: 12px;
+  }
+  
