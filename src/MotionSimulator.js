@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect} from 'react';
 import './App.css'; 
 import catlogo from '../src/cat5.svg';
 
 const MotionSimulator = () => {
   const [position, setPosition] = useState({ x: 453, y: 233 });
+  const [position1, setPosition1] = useState({ left: 453, top: 233 });
   const [angle, setAngle] = useState(0);
   const [size, setSize] = useState(100);
   const [steps, setSteps] = useState(10);
@@ -25,7 +26,13 @@ const MotionSimulator = () => {
   const [actionHistory, setActionHistory] = useState([]);
   const [initialState, setInitialState] = useState(null); // Store initial state
   const [selectedAction, setSelectedAction] = useState(null);
-  const [selectIndex1,setselectIndex1]=useState();
+  const [selectedAction1, setSelectedAction1] = useState(null);
+
+  // const [position1, setPosition1] = useState({ left: 0, top: 0 });
+  const [dragging, setDragging] = useState(false);
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+
+  
 
   const storeInitialState = () => {
     setInitialState({
@@ -38,10 +45,15 @@ const MotionSimulator = () => {
     });
   };
 
-  const minX = -23;
-  const maxX = 1086;
-  const minY = -7;
-  const maxY = 608;
+  // const minX = -23;
+  // const maxX = 1086;
+  // const minY = -7;
+  // const maxY = 608;
+
+  const minX = 6;
+  const maxX = 1136;
+  const minY = 24;
+  const maxY = 624;
 
   const withinBounds = (x, y) => {
     return x >= minX && x <= maxX && y >= minY && y <= maxY;
@@ -52,6 +64,8 @@ const MotionSimulator = () => {
     const newX = position.x + steps * Math.cos(rad);
     const newY = position.y + steps * Math.sin(rad);
     if (withinBounds(newX, newY)) {
+      console.log(newX);
+      console.log(newY);
       setPosition({ x: newX, y: newY });
       setActionHistory([...actionHistory, { action: 'move', params: { steps } }]);
     }
@@ -152,6 +166,7 @@ const MotionSimulator = () => {
     }
   };
 
+
   const pointInDirection = (direction) => {
     const parsedDirection = Number(direction);
     if (!isNaN(parsedDirection)) {
@@ -165,6 +180,10 @@ const MotionSimulator = () => {
     if (!isNaN(parsedSize)) {
       setSize(parsedSize);
       setActionHistory([...actionHistory, { action: 'changeSize', params: { newSize: parsedSize } }]);
+      const draggableElements = document.querySelectorAll('.draggable');
+      draggableElements.forEach(element => {
+        element.style.width = `${parsedSize}px`;
+      });
     }
   };
 
@@ -268,6 +287,75 @@ const MotionSimulator = () => {
     }
   };
 
+  const moveToTarget = (targetX, targetY, duration) => {
+    const startX = position.x;
+    const startY = position.y;
+   
+    const deltaX = targetX - startX;
+    const deltaY = targetY - startY;
+    const steps = duration * 60;
+    const stepX = deltaX / steps;
+    const stepY = deltaY / steps;
+
+    let currentStep = 0;
+
+    const interval = setInterval(() => {
+      currentStep++;
+      const newX = startX + stepX * currentStep;
+      const newY = startY + stepY * currentStep;
+
+      if (currentStep >= steps || !withinBounds(newX, newY)) {
+        clearInterval(interval);
+        setPosition({ x: targetX, y: targetY });
+      } else {
+        setPosition({ x: newX, y: newY });
+      }
+    }, 1000 / 60);
+
+    setActionHistory([...actionHistory, { action: 'moveToTarget', params: { targetX, targetY, duration } }]);
+  };
+
+  const handleAction = () => {
+    if (selectedAction1 === 'Random Pointer') {
+      glideToRandomPosition(Number(glideSeconds))
+    } else if (selectedAction1 === 'Mouse Pointer') {
+      moveToTarget(24, 624, 2);
+    }
+  };
+  const handleMouseDown = (e) => {
+    setDragging(true);
+    setOffset({
+        x: e.clientX - position1.left,
+        y: e.clientY - position1.top,
+    });
+};
+
+const handleMouseMove = (e) => {
+    if (dragging) {
+        setPosition1({
+            left: e.clientX - offset.x,
+            top: e.clientY - offset.y,
+        });
+      
+        
+    }
+};
+
+const handleMouseUp = () => {
+    setDragging(false);
+};
+
+useEffect(() => {
+ 
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+    
+    };
+}, [dragging]);
 
   return (
     <div className="app">
@@ -319,8 +407,18 @@ const MotionSimulator = () => {
             />
           </label>
           <button onClick={handleGoToPosition}>
+    
             Go to ({goToX}, {goToY})
           </button>
+          <button onClick={() => setTimeout(() => moveToTarget(-23, 608, 2), 1000)}>
+  <label>
+    Select Action:
+    <select value={selectedAction1} onChange={(e) => setSelectedAction1(e.target.value)}>
+      <option value="Mouse Pointer">Mouse Pointer</option>
+    </select>
+  </label>
+  Click
+</button>
           <label>
             Glide Seconds:
             <input
@@ -329,7 +427,15 @@ const MotionSimulator = () => {
               onChange={(e) => setGlideSeconds(e.target.value)}
             />
           </label>
-          <button onClick={() => glideToRandomPosition(Number(glideSeconds))}>Glide to Random Position in {glideSeconds}s</button>
+          <label>
+              Select Action:
+              <select value={selectedAction1} onChange={(e) => setSelectedAction1(e.target.value)}>
+                <option value="Random Pointer">Random Pointer</option>
+                <option value="Mouse Pointer">Mouse Pointer</option>
+              </select>
+            </label>
+            <button onClick={handleAction}>Execute Action</button>
+          {/* <button onClick={() => glideToRandomPosition(Number(glideSeconds))}>Glide to Random Position in {glideSeconds}s</button> */}
           <label>
             Go To X1:
             <input
@@ -354,6 +460,7 @@ const MotionSimulator = () => {
               onChange={(e) => setGlideSeconds(e.target.value)}
             />
           </label>
+         
           <button onClick={() => glideToPosition(goToX1, goToY1, glideSeconds)}>Glide to ({goToX1}, {goToY1}) in {glideSeconds}s</button>
           <label>
             Point Direction:
@@ -400,6 +507,8 @@ const MotionSimulator = () => {
             />
           </label>
           <button onClick={() => setY(goToY)}>Set Y to {goToY}</button>
+
+          
           <h3>Looks</h3>
           <label>
             Size:
@@ -468,12 +577,16 @@ const MotionSimulator = () => {
             display: visible ? 'block' : 'none'
           }}
         >
-          <img src={catlogo} alt="Object" />
+          <img src={catlogo}     className="draggable"
+            style={{ left: position1.left, top: position1.top }}
+            onMouseDown={handleMouseDown}
+alt="Object" />
           {word && (
             
-            <div style={{ top: position.y - 20 }}>
-              {word}
-            </div>
+          
+            <div className="speech-bubble">
+            {word}
+          </div>
           )}
         </div>
       </div>
