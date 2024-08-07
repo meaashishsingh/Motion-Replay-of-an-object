@@ -11,8 +11,8 @@ const MotionSimulator = () => {
   const [turnDegrees1, setTurnDegrees1] = useState(15);
   const [goToX, setGoToX] = useState(640);
   const [goToY, setGoToY] = useState(110);
-  const [goToX1, setGoToX1] = useState(1201);
-  const [goToY1, setGoToY1] = useState(201);
+  const [goToX1, setGoToX1] = useState(1200);
+  const [goToY1, setGoToY1] = useState(203);
   const [glideSeconds, setGlideSeconds] = useState(1);
   const [pointDirection, setPointDirection] = useState(90);
   const [changeValue, setChangeValue] = useState(10);
