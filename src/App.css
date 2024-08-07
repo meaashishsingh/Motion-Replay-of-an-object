@@ -5,10 +5,10 @@
 .sidebar {
   width: 300px;
   padding: 20px;
-<<<<<<< HEAD
+
   background-color: #f4f4f4;
   border-right: 1px solid #ddd;
-=======
+
   box-shadow: 2px 0 5px rgba(0,0,0,0.1);
   overflow-y: auto;
 }
@@ -106,7 +106,7 @@
 
 .control-panel h3 {
   margin-top: 0;
->>>>>>> d804015b2cc5e1a80a6b6fab0c5ccd87041184ac
+
 }
 
 .speech-bubble {
