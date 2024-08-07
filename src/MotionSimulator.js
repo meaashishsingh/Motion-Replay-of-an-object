@@ -1,17 +1,16 @@
-import React, { useState,useEffect} from 'react';
+import React, { useState,useEffect } from 'react';
 import './App.css'; 
 import catlogo from '../src/cat5.svg';
 
 const MotionSimulator = () => {
-  const [position, setPosition] = useState({ x: 453, y: 233 });
-  const [position1, setPosition1] = useState({ left: 453, top: 233 });
+  const [position, setPosition] = useState({ x: 859, y: 233 });
   const [angle, setAngle] = useState(0);
   const [size, setSize] = useState(100);
   const [steps, setSteps] = useState(10);
   const [turnDegrees, setTurnDegrees] = useState(15);
   const [turnDegrees1, setTurnDegrees1] = useState(15);
-  const [goToX, setGoToX] = useState(120);
-  const [goToY, setGoToY] = useState(100);
+  const [goToX, setGoToX] = useState(640);
+  const [goToY, setGoToY] = useState(110);
   const [goToX1, setGoToX1] = useState(50);
   const [goToY1, setGoToY1] = useState(50);
   const [glideSeconds, setGlideSeconds] = useState(1);
@@ -26,13 +25,40 @@ const MotionSimulator = () => {
   const [actionHistory, setActionHistory] = useState([]);
   const [initialState, setInitialState] = useState(null); // Store initial state
   const [selectedAction, setSelectedAction] = useState(null);
-  const [selectedAction1, setSelectedAction1] = useState(null);
-
-  // const [position1, setPosition1] = useState({ left: 0, top: 0 });
+  const [selectIndex1,setselectIndex1]=useState();
   const [dragging, setDragging] = useState(false);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
-
   
+  useEffect(() => {
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [dragging]);
+
+  const handleMouseDown = (e) => {
+    setDragging(true);
+    setOffset({
+      x: e.clientX - position.x,
+      y: e.clientY - position.y,
+    });
+  };
+
+  const handleMouseMove = (e) => {
+    if (dragging) {
+      setPosition({
+        x: e.clientX - offset.x,
+        y: e.clientY - offset.y,
+      });
+    }
+  };
+
+  const handleMouseUp = () => {
+    setDragging(false);
+  };
 
   const storeInitialState = () => {
     setInitialState({
@@ -49,26 +75,40 @@ const MotionSimulator = () => {
   // const maxX = 1086;
   // const minY = -7;
   // const maxY = 608;
-
-  const minX = 6;
-  const maxX = 1136;
-  const minY = 24;
-  const maxY = 624;
+  const minX = 342;
+  const maxX = 1472;
+  const minY = -37;
+  const maxY = 559;
 
   const withinBounds = (x, y) => {
     return x >= minX && x <= maxX && y >= minY && y <= maxY;
   };
 
+  // const moveSteps = (steps) => {
+  //   const rad = (Math.PI / 180) * angle;
+  //   const newX = position.x + steps * Math.cos(rad);
+  //   const newY = position.y + steps * Math.sin(rad);
+  //   if (withinBounds(newX, newY)) {
+  //     setPosition({ x: newX, y: newY });
+  //     setActionHistory([...actionHistory, { action: 'move', params: { steps } }]);
+  //   }
+  // };
   const moveSteps = (steps) => {
-    const rad = (Math.PI / 180) * angle;
-    const newX = position.x + steps * Math.cos(rad);
-    const newY = position.y + steps * Math.sin(rad);
-    if (withinBounds(newX, newY)) {
-      console.log(newX);
-      console.log(newY);
-      setPosition({ x: newX, y: newY });
-      setActionHistory([...actionHistory, { action: 'move', params: { steps } }]);
-    }
+    setPosition((prevPosition) => {
+      const rad = (Math.PI / 180) * angle;
+      const newX = prevPosition.x + steps * Math.cos(rad);
+      const newY = prevPosition.y + steps * Math.sin(rad);
+
+      if (withinBounds(newX, newY)) {
+        setActionHistory((prevHistory) => [
+          ...prevHistory,
+          { action: 'move', params: { steps } },
+        ]);
+        return { x: newX, y: newY };
+      } else {
+        return prevPosition;
+      }
+    });
   };
 
   const handleMoveSteps = () => {
@@ -166,7 +206,6 @@ const MotionSimulator = () => {
     }
   };
 
-
   const pointInDirection = (direction) => {
     const parsedDirection = Number(direction);
     if (!isNaN(parsedDirection)) {
@@ -180,7 +219,7 @@ const MotionSimulator = () => {
     if (!isNaN(parsedSize)) {
       setSize(parsedSize);
       setActionHistory([...actionHistory, { action: 'changeSize', params: { newSize: parsedSize } }]);
-      const draggableElements = document.querySelectorAll('.draggable');
+      const draggableElements = document.querySelectorAll('.draggable1');
       draggableElements.forEach(element => {
         element.style.width = `${parsedSize}px`;
       });
@@ -287,75 +326,6 @@ const MotionSimulator = () => {
     }
   };
 
-  const moveToTarget = (targetX, targetY, duration) => {
-    const startX = position.x;
-    const startY = position.y;
-   
-    const deltaX = targetX - startX;
-    const deltaY = targetY - startY;
-    const steps = duration * 60;
-    const stepX = deltaX / steps;
-    const stepY = deltaY / steps;
-
-    let currentStep = 0;
-
-    const interval = setInterval(() => {
-      currentStep++;
-      const newX = startX + stepX * currentStep;
-      const newY = startY + stepY * currentStep;
-
-      if (currentStep >= steps || !withinBounds(newX, newY)) {
-        clearInterval(interval);
-        setPosition({ x: targetX, y: targetY });
-      } else {
-        setPosition({ x: newX, y: newY });
-      }
-    }, 1000 / 60);
-
-    setActionHistory([...actionHistory, { action: 'moveToTarget', params: { targetX, targetY, duration } }]);
-  };
-
-  const handleAction = () => {
-    if (selectedAction1 === 'Random Pointer') {
-      glideToRandomPosition(Number(glideSeconds))
-    } else if (selectedAction1 === 'Mouse Pointer') {
-      moveToTarget(24, 624, 2);
-    }
-  };
-  const handleMouseDown = (e) => {
-    setDragging(true);
-    setOffset({
-        x: e.clientX - position1.left,
-        y: e.clientY - position1.top,
-    });
-};
-
-const handleMouseMove = (e) => {
-    if (dragging) {
-        setPosition1({
-            left: e.clientX - offset.x,
-            top: e.clientY - offset.y,
-        });
-      
-        
-    }
-};
-
-const handleMouseUp = () => {
-    setDragging(false);
-};
-
-useEffect(() => {
- 
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-
-    return () => {
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('mouseup', handleMouseUp);
-    
-    };
-}, [dragging]);
 
   return (
     <div className="app">
@@ -407,18 +377,8 @@ useEffect(() => {
             />
           </label>
           <button onClick={handleGoToPosition}>
-    
             Go to ({goToX}, {goToY})
           </button>
-          <button onClick={() => setTimeout(() => moveToTarget(-23, 608, 2), 1000)}>
-  <label>
-    Select Action:
-    <select value={selectedAction1} onChange={(e) => setSelectedAction1(e.target.value)}>
-      <option value="Mouse Pointer">Mouse Pointer</option>
-    </select>
-  </label>
-  Click
-</button>
           <label>
             Glide Seconds:
             <input
@@ -427,15 +387,7 @@ useEffect(() => {
               onChange={(e) => setGlideSeconds(e.target.value)}
             />
           </label>
-          <label>
-              Select Action:
-              <select value={selectedAction1} onChange={(e) => setSelectedAction1(e.target.value)}>
-                <option value="Random Pointer">Random Pointer</option>
-                <option value="Mouse Pointer">Mouse Pointer</option>
-              </select>
-            </label>
-            <button onClick={handleAction}>Execute Action</button>
-          {/* <button onClick={() => glideToRandomPosition(Number(glideSeconds))}>Glide to Random Position in {glideSeconds}s</button> */}
+          <button onClick={() => glideToRandomPosition(Number(glideSeconds))}>Glide to Random Position in {glideSeconds}s</button>
           <label>
             Go To X1:
             <input
@@ -460,7 +412,6 @@ useEffect(() => {
               onChange={(e) => setGlideSeconds(e.target.value)}
             />
           </label>
-         
           <button onClick={() => glideToPosition(goToX1, goToY1, glideSeconds)}>Glide to ({goToX1}, {goToY1}) in {glideSeconds}s</button>
           <label>
             Point Direction:
@@ -507,8 +458,6 @@ useEffect(() => {
             />
           </label>
           <button onClick={() => setY(goToY)}>Set Y to {goToY}</button>
-
-          
           <h3>Looks</h3>
           <label>
             Size:
@@ -564,33 +513,50 @@ useEffect(() => {
     <button onClick={() => handleSelectAction(selectedAction)}>Replay Actions</button>
         </div> 
       </div>
-      <div className="simulation-area">
-        <div
-          className="object"
-          style={{
-            position: 'absolute',
-            left: position.x,
-            top: position.y,
-            transform: `rotate(${angle}deg)`,
-            width: size,
-            height: size,
-            display: visible ? 'block' : 'none'
-          }}
-        >
-          <img src={catlogo}     className="draggable"
-            style={{ left: position1.left, top: position1.top }}
-            onMouseDown={handleMouseDown}
-alt="Object" />
-          {word && (
-            
-          
-            <div className="speech-bubble">
-            {word}
-          </div>
-          )}
-        </div>
+      
+    <div
+    className="draggable"
+    style={{
+      left: position.x,
+      top: position.y,
+      position: 'absolute',
+      cursor: dragging ? 'grabbing' : 'grab',
+    }}
+    onMouseDown={handleMouseDown}
+  >
+    <img
+      src={catlogo}
+      alt="cat logo"
+      className="draggable1"
+      style={{
+         width: '50px',
+        // height: '100px',
+        transform: `rotate(${angle}deg)`,
+        display: visible ? 'block' : 'none',
+      }}
+    />
+    {word && (
+      <div
+        style={{
+          position: 'absolute',
+          left: 60,
+          top: 0,
+          padding: '5px',
+          backgroundColor: 'rgba(255, 255, 255, 0.8)',
+          border: '1px solid #000',
+          borderRadius: '50px',
+        }}
+      >
+        {word}
       </div>
-    </div>
+    )}
+  </div>
+  <div className="preview" style={{ position: 'absolute', right: 0, top: 0, padding: '10px', backgroundColor: 'lightgray' }}>
+        <h4>Current Position</h4>
+        <p>X: {Math.round(position.x)}</p>
+        <p>Y: {Math.round(position.y)}</p>
+      </div>
+</div>
   );
 };
 
