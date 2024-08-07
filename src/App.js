@@ -1,5 +1,5 @@
 import React from 'react';
-import MotionSimulator from './MotionSimulator';
+import MotionSimulator from './component/MotionSimulator';
 import './App.css';
 
 const App = () => {
