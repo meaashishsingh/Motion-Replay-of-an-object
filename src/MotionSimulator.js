@@ -11,8 +11,8 @@ const MotionSimulator = () => {
   const [turnDegrees1, setTurnDegrees1] = useState(15);
   const [goToX, setGoToX] = useState(640);
   const [goToY, setGoToY] = useState(110);
-  const [goToX1, setGoToX1] = useState(1200);
-  const [goToY1, setGoToY1] = useState(203);
+  const [goToX1, setGoToX1] = useState(1272);
+  const [goToY1, setGoToY1] = useState(172);
   const [glideSeconds, setGlideSeconds] = useState(1);
   const [pointDirection, setPointDirection] = useState(90);
   const [changeValue, setChangeValue] = useState(10);
@@ -30,14 +30,41 @@ const MotionSimulator = () => {
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   
   useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (dragging) {
+        setPosition({
+          x: e.clientX - offset.x,
+          y: e.clientY - offset.y,
+        });
+      }
+    };
+
+    const handleTouchMove = (e) => {
+      if (dragging) {
+        const touch = e.touches[0];
+        setPosition({
+          x: touch.clientX - offset.x,
+          y: touch.clientY - offset.y,
+        });
+      }
+    };
+
+    const handleMouseUpOrTouchEnd = () => {
+      setDragging(false);
+    };
+
     document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener('mouseup', handleMouseUpOrTouchEnd);
+    document.addEventListener('touchmove', handleTouchMove);
+    document.addEventListener('touchend', handleMouseUpOrTouchEnd);
 
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('mouseup', handleMouseUpOrTouchEnd);
+      document.removeEventListener('touchmove', handleTouchMove);
+      document.removeEventListener('touchend', handleMouseUpOrTouchEnd);
     };
-  }, [dragging]);
+  }, [dragging, offset]);
 
   const handleMouseDown = (e) => {
     setDragging(true);
@@ -47,19 +74,14 @@ const MotionSimulator = () => {
     });
   };
 
-  const handleMouseMove = (e) => {
-    if (dragging) {
-      setPosition({
-        x: e.clientX - offset.x,
-        y: e.clientY - offset.y,
-      });
-    }
+  const handleTouchStart = (e) => {
+    const touch = e.touches[0];
+    setDragging(true);
+    setOffset({
+      x: touch.clientX - position.x,
+      y: touch.clientY - position.y,
+    });
   };
-
-  const handleMouseUp = () => {
-    setDragging(false);
-  };
-
   const storeInitialState = () => {
     setInitialState({
       position: { ...position },
@@ -523,6 +545,7 @@ const MotionSimulator = () => {
       cursor: dragging ? 'grabbing' : 'grab',
     }}
     onMouseDown={handleMouseDown}
+    onTouchStart={handleTouchStart}
   >
     <img
       src={catlogo}
